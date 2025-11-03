@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "@phosphor-icons/react";
 
 interface HeroProps {
   title: string;
@@ -20,27 +19,33 @@ export function Hero({
   ctaHref = "/home",
 }: HeroProps) {
   return (
-    <main className="flex-1 flex items-center justify-center px-6 py-20">
+    <main className="flex-1 flex items-center justify-center px-6 py-20 bg-white">
       <div className="container mx-auto max-w-4xl text-center space-y-8">
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
           {title}
           {subtitle && (
             <>
               <br />
-              <span className="text-muted-foreground">{subtitle}</span>
+              <span className="text-blue-600 underline decoration-blue-600 decoration-2 underline-offset-4">
+                {subtitle}
+              </span>
             </>
           )}
         </h1>
 
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
           {description}
         </p>
 
         <div className="flex items-center justify-center gap-4 pt-4">
           <Link href={ctaHref}>
-            <Button size="lg" className="gap-2">
+            <Button size="lg" className="rounded-lg">
               {ctaLabel}
-              <ArrowRight className="size-5" />
+            </Button>
+          </Link>
+          <Link href={ctaHref}>
+            <Button size="lg" variant="outline" className="rounded-lg">
+              View Editor
             </Button>
           </Link>
         </div>

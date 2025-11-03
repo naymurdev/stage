@@ -2,6 +2,7 @@ import { Navigation } from "./Navigation";
 import { Hero } from "./Hero";
 import { Features } from "./Features";
 import { Footer } from "./Footer";
+import { MasonryGrid } from "./MasonryGrid";
 
 interface Feature {
   title: string;
@@ -41,6 +42,7 @@ export function LandingPage({
         ctaLabel={ctaLabel}
         ctaHref={ctaHref}
       />
+      <MasonryGrid />
       <Features features={features} title={featuresTitle} />
       <Footer brandName={brandName} additionalText={footerText} />
     </div>

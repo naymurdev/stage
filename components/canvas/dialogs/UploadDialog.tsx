@@ -71,7 +71,7 @@ export function UploadDialog({ open, onOpenChange, onUpload }: UploadDialogProps
             }`}
           >
             <input {...getInputProps()} />
-            <div className={`mb-4 transition-colors flex items-center justify-center ${isDragActive ? "text-blue-500" : "text-gray-400"}`}>
+            <div className={`mb-4 transition-colors flex items-center justify-center w-full ${isDragActive ? "text-blue-500" : "text-gray-400"}`}>
               <ImageIcon size={56} weight="duotone" />
             </div>
             {isDragActive ? (

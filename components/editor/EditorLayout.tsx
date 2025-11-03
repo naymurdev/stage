@@ -14,7 +14,7 @@ function EditorContent() {
         <div className="flex-shrink-0 pt-6 pb-4">
           <CanvasToolbar />
         </div>
-        <div className="flex-1 w-full flex items-center justify-center p-4">
+        <div className="flex-1 w-full flex items-center justify-center p-20">
           <CanvasEditor className="w-full h-full max-w-full max-h-full" />
         </div>
       </div>

@@ -21,9 +21,9 @@ const features = [
 export default function Home() {
   return (
     <LandingPage
-      heroTitle="Create stunning designs"
-      heroSubtitle="with ease"
-      heroDescription="A modern canvas editor for adding images, text, and backgrounds. Export your creations in high quality."
+      heroTitle="Create stunning visual designs"
+      heroSubtitle="with Stage"
+      heroDescription="A modern canvas editor that brings your ideas to life. Add images, text, backgrounds, and export your creations in high quality. Built for designers and creators."
       ctaLabel="Get Started"
       ctaHref="/home"
       features={features}
