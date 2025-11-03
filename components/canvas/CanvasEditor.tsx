@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Stage, Layer, Image, Text, Transformer, Rect } from "react-konva";
+import { Stage, Layer, Image, Text, Transformer, Rect, Line } from "react-konva";
 import { useCanvasContext } from "./CanvasContext";
 import { DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT } from "@/lib/constants";
 import Konva from "konva";
@@ -28,6 +28,8 @@ export function CanvasEditor({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const { initializeCanvas, objects, selectedObject, operations, layer } = useCanvasContext();
   const [scale, setScale] = useState(1);
+  const [showGuides, setShowGuides] = useState(false);
+  const [draggingObject, setDraggingObject] = useState<string | null>(null);
 
   // Calculate scale to fit canvas in viewport
   useEffect(() => {
@@ -109,13 +111,20 @@ export function CanvasEditor({
     }
   };
 
-  // Sync backgroundColor with background rect
+  // Sync backgroundColor with background rect (only if no gradient/image is set)
   useEffect(() => {
-    if (layerRef.current) {
+    if (layerRef.current && backgroundColor) {
       const bgRect = layerRef.current.findOne((node: any) => node.id() === "canvas-background") as Konva.Rect;
       if (bgRect && bgRect instanceof Konva.Rect) {
-        bgRect.fill(backgroundColor);
-        layerRef.current.batchDraw();
+        // Only update if there's no gradient or pattern
+        const hasGradient = bgRect.fillLinearGradientColorStops()?.length > 0 || 
+                           bgRect.fillRadialGradientColorStops()?.length > 0;
+        const hasPattern = bgRect.fillPatternImage() !== null;
+        
+        if (!hasGradient && !hasPattern) {
+          bgRect.fill(backgroundColor);
+          layerRef.current.batchDraw();
+        }
       }
     }
   }, [backgroundColor, layer]);
@@ -161,6 +170,30 @@ export function CanvasEditor({
             listening={false}
           />
           
+          {/* Center Guide Lines */}
+          {showGuides && (
+            <>
+              {/* Vertical center line */}
+              <Line
+                points={[width / 2, 0, width / 2, height]}
+                stroke="#3b82f6"
+                strokeWidth={1}
+                dash={[5, 5]}
+                opacity={0.6}
+                listening={false}
+              />
+              {/* Horizontal center line */}
+              <Line
+                points={[0, height / 2, width, height / 2]}
+                stroke="#3b82f6"
+                strokeWidth={1}
+                dash={[5, 5]}
+                opacity={0.6}
+                listening={false}
+              />
+            </>
+          )}
+          
           {/* Render objects */}
           {objects.map((obj) => {
             const isSelected = selectedObject?.id === obj.id;
@@ -181,7 +214,29 @@ export function CanvasEditor({
                   draggable
                   onClick={() => handleObjectClick(obj)}
                   onTap={() => handleObjectClick(obj)}
+                  onDragStart={() => {
+                    setDraggingObject(obj.id);
+                    setShowGuides(true);
+                  }}
+                  onDragMove={(e) => {
+                    const node = e.target;
+                    const centerX = width / 2;
+                    const centerY = height / 2;
+                    const objCenterX = node.x() + (node.width() * node.scaleX()) / 2;
+                    const objCenterY = node.y() + (node.height() * node.scaleY()) / 2;
+                    
+                    // Snap to center if within 10px
+                    const snapThreshold = 10;
+                    if (Math.abs(objCenterX - centerX) < snapThreshold) {
+                      node.x(centerX - (node.width() * node.scaleX()) / 2);
+                    }
+                    if (Math.abs(objCenterY - centerY) < snapThreshold) {
+                      node.y(centerY - (node.height() * node.scaleY()) / 2);
+                    }
+                  }}
                   onDragEnd={(e) => {
+                    setDraggingObject(null);
+                    setShowGuides(false);
                     operations.transformObject(obj.id, {
                       left: e.target.x(),
                       top: e.target.y(),
@@ -226,7 +281,31 @@ export function CanvasEditor({
                   offsetY={0}
                   onClick={() => handleObjectClick(obj)}
                   onTap={() => handleObjectClick(obj)}
+                  onDragStart={() => {
+                    setDraggingObject(obj.id);
+                    setShowGuides(true);
+                  }}
+                  onDragMove={(e) => {
+                    const node = e.target;
+                    const centerX = width / 2;
+                    const centerY = height / 2;
+                    const textWidth = node.width();
+                    const textHeight = node.height();
+                    const objCenterX = node.x();
+                    const objCenterY = node.y();
+                    
+                    // Snap to center if within 10px
+                    const snapThreshold = 10;
+                    if (Math.abs(objCenterX - centerX) < snapThreshold) {
+                      node.x(centerX);
+                    }
+                    if (Math.abs(objCenterY - centerY) < snapThreshold) {
+                      node.y(centerY);
+                    }
+                  }}
                   onDragEnd={(e) => {
+                    setDraggingObject(null);
+                    setShowGuides(false);
                     operations.transformObject(obj.id, {
                       left: e.target.x(),
                       top: e.target.y(),

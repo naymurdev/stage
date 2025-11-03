@@ -244,10 +244,12 @@ export function CanvasProvider({ children }: { children: React.ReactNode }) {
       if (!stage) return "";
       
       return new Promise((resolve) => {
+        // Export the Konva Stage as a data URL
+        // This captures the entire canvas including all objects, background, etc.
         const dataURL = stage.toDataURL({
           mimeType: format === "jpg" ? "image/jpeg" : "image/png",
-          quality: quality,
-          pixelRatio: 1,
+          quality: quality, // For JPEG, 0-1 quality
+          pixelRatio: 1, // Use 1 for standard resolution, increase for higher quality
         });
         resolve(dataURL);
       });

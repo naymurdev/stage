@@ -96,9 +96,9 @@ export async function applyTemplateBackground(
         
         // For linear gradient, use fillLinearGradientColorStops
         if (background.gradient.type === "linear") {
-          const colorStops: number[] = [];
+          const colorStops: (number | string)[] = [];
           gradientColors.forEach((color, index) => {
-            colorStops.push(index / (gradientColors.length - 1));
+            colorStops.push(index / Math.max(1, gradientColors.length - 1));
             colorStops.push(color);
           });
           gradientRect.fillLinearGradientColorStops(colorStops);
@@ -106,9 +106,9 @@ export async function applyTemplateBackground(
           gradientRect.fillLinearGradientEndPoint({ x: stage.width(), y: stage.height() });
         } else {
           // radial
-          const colorStops: number[] = [];
+          const colorStops: (number | string)[] = [];
           gradientColors.forEach((color, index) => {
-            colorStops.push(index / (gradientColors.length - 1));
+            colorStops.push(index / Math.max(1, gradientColors.length - 1));
             colorStops.push(color);
           });
           gradientRect.fillRadialGradientColorStops(colorStops);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, Type, Palette, Download, Image as ImageIcon } from "lucide-react";
+import { Upload, Type, Palette, Download, Image as ImageIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useCanvas } from "@/hooks/useCanvas";
@@ -20,6 +20,11 @@ export function CanvasToolbar() {
   const [colorDialogOpen, setColorDialogOpen] = useState(false);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
+  const [backgroundType, setBackgroundType] = useState<"solid" | "gradient" | "image">("solid");
+  const [gradientColors, setGradientColors] = useState(["#ffffff", "#3b82f6"]);
+  const [gradientType, setGradientType] = useState<"linear" | "radial">("linear");
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState<string | null>(null);
+  const [unsplashLoading, setUnsplashLoading] = useState(false);
 
   // Upload states
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -99,9 +104,158 @@ export function CanvasToolbar() {
     if (layer) {
       const bgRect = layer.findOne((node: any) => node.id() === "canvas-background") as Konva.Rect;
       if (bgRect && bgRect instanceof Konva.Rect) {
+        // Clear any gradient or pattern
+        bgRect.fillPatternImage(null);
+        bgRect.fillLinearGradientColorStops([]);
+        bgRect.fillRadialGradientColorStops([]);
         bgRect.fill(color);
         layer.batchDraw();
       }
+    }
+  };
+
+  const updateCanvasGradient = (colors: string[], type: "linear" | "radial") => {
+    if (layer && stage) {
+      const bgRect = layer.findOne((node: any) => node.id() === "canvas-background") as Konva.Rect;
+      if (bgRect && bgRect instanceof Konva.Rect) {
+        // Clear any existing pattern or solid fill first
+        bgRect.fillPatternImage(null);
+        bgRect.fill(null);
+        
+        // Build color stops array: [offset1, color1, offset2, color2, ...]
+        // Konva accepts hex color strings directly in the array
+        const colorStopsArray: (number | string)[] = [];
+        colors.forEach((color, index) => {
+          const offset = colors.length === 1 ? 0 : index / Math.max(1, colors.length - 1);
+          colorStopsArray.push(offset);
+          colorStopsArray.push(color);
+        });
+        
+        if (type === "linear") {
+          bgRect.fillLinearGradientColorStops(colorStopsArray);
+          bgRect.fillLinearGradientStartPoint({ x: 0, y: 0 });
+          bgRect.fillLinearGradientEndPoint({ x: stage.width(), y: stage.height() });
+        } else {
+          const centerX = stage.width() / 2;
+          const centerY = stage.height() / 2;
+          const radius = Math.max(stage.width(), stage.height()) / 2;
+          bgRect.fillRadialGradientColorStops(colorStopsArray);
+          bgRect.fillRadialGradientStartPoint({ x: centerX, y: centerY });
+          bgRect.fillRadialGradientStartRadius(0);
+          bgRect.fillRadialGradientEndPoint({ x: centerX, y: centerY });
+          bgRect.fillRadialGradientEndRadius(radius);
+        }
+        
+        // Force redraw
+        layer.batchDraw();
+      }
+    }
+  };
+
+  const updateCanvasBackgroundImage = async (imageUrl: string) => {
+    if (layer && stage) {
+      try {
+        const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+          const image = new Image();
+          image.crossOrigin = "anonymous";
+          
+          // Add timeout to avoid hanging
+          const timeout = setTimeout(() => {
+            reject(new Error("Image load timeout"));
+          }, 10000);
+          
+          image.onload = () => {
+            clearTimeout(timeout);
+            resolve(image);
+          };
+          image.onerror = (err) => {
+            clearTimeout(timeout);
+            reject(err);
+          };
+          
+          image.src = imageUrl;
+        });
+
+        const bgRect = layer.findOne((node: any) => node.id() === "canvas-background") as Konva.Rect;
+        if (bgRect && bgRect instanceof Konva.Rect) {
+          // Clear any gradient or solid fill
+          bgRect.fill(null);
+          bgRect.fillLinearGradientColorStops([]);
+          bgRect.fillRadialGradientColorStops([]);
+          
+          // Use fillPatternImage for background
+          bgRect.fillPatternImage(img);
+          bgRect.fillPatternRepeat("no-repeat");
+          
+          // Scale image to fit canvas
+          const scaleX = stage.width() / img.width;
+          const scaleY = stage.height() / img.height;
+          bgRect.fillPatternScale({ x: scaleX, y: scaleY });
+          bgRect.fillPatternOffset({ x: 0, y: 0 });
+          
+          layer.batchDraw();
+        }
+      } catch (error) {
+        console.error("Failed to load background image:", error);
+        // Fallback to Picsum Photos if Unsplash fails
+        try {
+          const width = stage.width();
+          const height = stage.height();
+          const fallbackUrl = `https://picsum.photos/${width}/${height}?random=${Date.now()}`;
+          const fallbackImg = await new Promise<HTMLImageElement>((resolve, reject) => {
+            const image = new Image();
+            image.crossOrigin = "anonymous";
+            image.onload = () => resolve(image);
+            image.onerror = reject;
+            image.src = fallbackUrl;
+          });
+          
+          const bgRect = layer.findOne((node: any) => node.id() === "canvas-background") as Konva.Rect;
+          if (bgRect && bgRect instanceof Konva.Rect) {
+            bgRect.fill(null);
+            bgRect.fillLinearGradientColorStops([]);
+            bgRect.fillRadialGradientColorStops([]);
+            bgRect.fillPatternImage(fallbackImg);
+            bgRect.fillPatternRepeat("no-repeat");
+            const scaleX = stage.width() / fallbackImg.width;
+            const scaleY = stage.height() / fallbackImg.height;
+            bgRect.fillPatternScale({ x: scaleX, y: scaleY });
+            layer.batchDraw();
+            setBackgroundImageUrl(fallbackUrl);
+          }
+        } catch (fallbackError) {
+          console.error("Fallback image also failed:", fallbackError);
+          alert("Failed to load background image. Please try again.");
+        }
+      }
+    }
+  };
+
+  const fetchUnsplashImage = async (query?: string) => {
+    setUnsplashLoading(true);
+    try {
+      const width = stage ? stage.width() : 1920;
+      const height = stage ? stage.height() : 1080;
+      
+      // Use Picsum Photos as primary source (more reliable, no CORS issues)
+      // It provides random high-quality images
+      let url = `https://picsum.photos/${width}/${height}?random=${Date.now()}`;
+      
+      // Alternative: Use Unsplash Source (may have CORS issues in some browsers)
+      // if (query) {
+      //   url = `https://source.unsplash.com/${width}x${height}/?${query}`;
+      // } else {
+      //   url = `https://source.unsplash.com/featured/${width}x${height}`;
+      // }
+      
+      setBackgroundImageUrl(url);
+      await updateCanvasBackgroundImage(url);
+      setBackgroundType("image");
+    } catch (error) {
+      console.error("Failed to fetch background image:", error);
+      alert("Failed to load background image. Please try again.");
+    } finally {
+      setUnsplashLoading(false);
     }
   };
 
@@ -111,11 +265,14 @@ export function CanvasToolbar() {
       const dataURL = await operations.exportCanvas(exportFormat, exportQuality);
 
       const link = document.createElement("a");
-      link.download = `canvas.${exportFormat}`;
+      link.download = `stage-${Date.now()}.${exportFormat}`;
       link.href = dataURL;
+      
+      // Append to body, click to download, then remove
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
       setExportDialogOpen(false);
     } catch (error) {
       console.error("Export failed:", error);
@@ -127,7 +284,8 @@ export function CanvasToolbar() {
 
   return (
     <>
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 px-4 py-2 flex items-center gap-2">
+      <div className="w-full flex justify-center z-50">
+        <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 px-4 py-2 flex items-center gap-2">
         <Button
           variant="ghost"
           size="icon"
@@ -169,6 +327,7 @@ export function CanvasToolbar() {
         >
           <Download className="h-5 w-5" />
         </Button>
+        </div>
       </div>
 
       {/* Upload Dialog */}
@@ -281,62 +440,280 @@ export function CanvasToolbar() {
 
       {/* Color Dialog */}
       <Dialog open={colorDialogOpen} onOpenChange={setColorDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Background Color</DialogTitle>
+            <DialogTitle>Background Settings</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Select Color</label>
-              <div className="flex items-center gap-3">
-                <Input
-                  type="color"
-                  value={backgroundColor}
-                  onChange={(e) => {
-                    const color = e.target.value;
-                    setBackgroundColor(color);
-                    updateCanvasBackground(color);
-                  }}
-                  className="w-20 h-20 cursor-pointer"
-                />
-                <Input
-                  type="text"
-                  value={backgroundColor}
-                  placeholder="#ffffff"
-                  className="flex-1"
-                  onChange={(e) => {
-                    const color = e.target.value;
-                    setBackgroundColor(color);
-                    if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)) {
-                      updateCanvasBackground(color);
-                    }
-                  }}
-                />
-              </div>
+            {/* Background Type Tabs */}
+            <div className="flex gap-2 border-b pb-2">
+              <button
+                onClick={() => setBackgroundType("solid")}
+                className={`px-4 py-2 rounded-t-md text-sm font-medium transition-colors ${
+                  backgroundType === "solid"
+                    ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Solid
+              </button>
+              <button
+                onClick={() => setBackgroundType("gradient")}
+                className={`px-4 py-2 rounded-t-md text-sm font-medium transition-colors ${
+                  backgroundType === "gradient"
+                    ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Gradient
+              </button>
+              <button
+                onClick={() => setBackgroundType("image")}
+                className={`px-4 py-2 rounded-t-md text-sm font-medium transition-colors ${
+                  backgroundType === "image"
+                    ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                Image
+              </button>
             </div>
 
-            {/* Preset Colors */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Preset Colors</label>
-              <div className="grid grid-cols-8 gap-2">
-                {[
-                  "#ffffff", "#000000", "#f3f4f6", "#ef4444",
-                  "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6",
-                  "#ec4899", "#06b6d4", "#84cc16", "#f97316",
-                ].map((color) => (
-                  <button
-                    key={color}
-                    className="w-10 h-10 rounded border-2 border-gray-200 hover:border-gray-400 transition-colors"
-                    style={{ backgroundColor: color }}
-                    onClick={() => {
+            {/* Solid Color */}
+            {backgroundType === "solid" && (
+            <div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select Color</label>
+                <div className="flex items-center gap-3">
+                  <Input
+                    type="color"
+                    value={backgroundColor}
+                    onChange={(e) => {
+                      const color = e.target.value;
                       setBackgroundColor(color);
                       updateCanvasBackground(color);
                     }}
-                    title={color}
+                    className="w-20 h-20 cursor-pointer"
                   />
-                ))}
+                  <Input
+                    type="text"
+                    value={backgroundColor}
+                    placeholder="#ffffff"
+                    className="flex-1"
+                    onChange={(e) => {
+                      const color = e.target.value;
+                      setBackgroundColor(color);
+                      if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(color)) {
+                        updateCanvasBackground(color);
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Preset Colors */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Preset Colors</label>
+                <div className="grid grid-cols-8 gap-2">
+                  {[
+                    "#ffffff", "#000000", "#f3f4f6", "#ef4444",
+                    "#3b82f6", "#10b981", "#f59e0b", "#8b5cf6",
+                    "#ec4899", "#06b6d4", "#84cc16", "#f97316",
+                  ].map((color) => (
+                    <button
+                      key={color}
+                      className="w-10 h-10 rounded border-2 border-gray-200 hover:border-gray-400 transition-colors"
+                      style={{ backgroundColor: color }}
+                      onClick={() => {
+                        setBackgroundColor(color);
+                        updateCanvasBackground(color);
+                      }}
+                      title={color}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
+            )}
+
+            {/* Gradient */}
+            {backgroundType === "gradient" && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Gradient Type</label>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={gradientType === "linear" ? "default" : "outline"}
+                      onClick={() => {
+                        setGradientType("linear");
+                        updateCanvasGradient(gradientColors, "linear");
+                      }}
+                      className="flex-1"
+                    >
+                      Linear
+                    </Button>
+                    <Button
+                      variant={gradientType === "radial" ? "default" : "outline"}
+                      onClick={() => {
+                        setGradientType("radial");
+                        updateCanvasGradient(gradientColors, "radial");
+                      }}
+                      className="flex-1"
+                    >
+                      Radial
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Colors</label>
+                  {gradientColors.map((color, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <Input
+                        type="color"
+                        value={color}
+                        onChange={(e) => {
+                          const newColors = [...gradientColors];
+                          newColors[index] = e.target.value;
+                          setGradientColors(newColors);
+                          updateCanvasGradient(newColors, gradientType);
+                        }}
+                        className="w-16 h-10 cursor-pointer"
+                      />
+                      <Input
+                        type="text"
+                        value={color}
+                        onChange={(e) => {
+                          const newColors = [...gradientColors];
+                          newColors[index] = e.target.value;
+                          setGradientColors(newColors);
+                          if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(e.target.value)) {
+                            updateCanvasGradient(newColors, gradientType);
+                          }
+                        }}
+                        className="flex-1"
+                        placeholder="#ffffff"
+                      />
+                      {gradientColors.length > 2 && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            const newColors = gradientColors.filter((_, i) => i !== index);
+                            setGradientColors(newColors);
+                            updateCanvasGradient(newColors, gradientType);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newColors = [...gradientColors, "#000000"];
+                      setGradientColors(newColors);
+                    }}
+                  >
+                    Add Color
+                  </Button>
+                </div>
+
+                {/* Preset Gradients */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Preset Gradients</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { colors: ["#667eea", "#764ba2"], type: "linear" as const },
+                      { colors: ["#f093fb", "#f5576c"], type: "linear" as const },
+                      { colors: ["#4facfe", "#00f2fe"], type: "linear" as const },
+                      { colors: ["#43e97b", "#38f9d7"], type: "linear" as const },
+                      { colors: ["#fa709a", "#fee140"], type: "linear" as const },
+                      { colors: ["#30cfd0", "#330867"], type: "linear" as const },
+                      { colors: ["#a8edea", "#fed6e3"], type: "linear" as const },
+                      { colors: ["#ff9a9e", "#fecfef"], type: "linear" as const },
+                      { colors: ["#ffecd2", "#fcb69f"], type: "linear" as const },
+                    ].map((preset, idx) => (
+                      <button
+                        key={idx}
+                        className="h-12 rounded border-2 border-gray-200 hover:border-gray-400 transition-colors relative overflow-hidden"
+                        style={{
+                          background: `linear-gradient(to right, ${preset.colors.join(", ")})`,
+                        }}
+                        onClick={() => {
+                          setGradientColors(preset.colors);
+                          setGradientType(preset.type);
+                          updateCanvasGradient(preset.colors, preset.type);
+                        }}
+                        title={preset.colors.join(" → ")}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Background Image */}
+            {backgroundType === "image" && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Background Image</label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Search keywords (e.g., nature, abstract, landscape)"
+                      className="flex-1"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          const query = (e.target as HTMLInputElement).value;
+                          if (query.trim()) {
+                            fetchUnsplashImage(query);
+                          }
+                        }
+                      }}
+                    />
+                    <Button
+                      onClick={() => fetchUnsplashImage()}
+                      disabled={unsplashLoading}
+                    >
+                      {unsplashLoading ? "Loading..." : "Random"}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Quick Search</label>
+                  <div className="flex flex-wrap gap-2">
+                    {["nature", "abstract", "landscape", "city", "ocean", "mountains", "sky", "minimal"].map((term) => (
+                      <Button
+                        key={term}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => fetchUnsplashImage(term)}
+                        disabled={unsplashLoading}
+                      >
+                        {term}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                {backgroundImageUrl && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Current Image</label>
+                    <div className="relative rounded-lg overflow-hidden border">
+                      <img
+                        src={backgroundImageUrl}
+                        alt="Background preview"
+                        className="w-full h-32 object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
