@@ -41,7 +41,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  runtime: "nodejs", // Required for auth.api calls to access database
   matcher: [
     "/home/:path*", // Protect all routes under /home
     "/sign-in",
