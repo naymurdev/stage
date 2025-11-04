@@ -76,32 +76,32 @@ export function StyleTabs() {
   });
 
   return (
-    <Tabs defaultValue="aspect" className="w-full">
-      <TabsList className="flex w-full gap-2.5 bg-muted/50 backdrop-blur-sm p-2.5 rounded-lg min-h-[44px]">
+    <Tabs defaultValue="aspect" className="w-full max-w-full">
+      <TabsList className="flex w-full gap-2 bg-muted/50 backdrop-blur-sm p-2 rounded-lg min-h-[44px] box-border overflow-hidden">
         <TabsTrigger 
           value="aspect" 
-          className="flex items-center justify-center gap-1.5 text-xs font-medium px-5 py-3 rounded-md transition-all duration-200 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:hover:text-foreground data-[state=inactive]:text-muted-foreground focus-visible:outline-none whitespace-nowrap flex-1 min-h-[36px]"
+          className="flex items-center justify-center gap-1.5 text-xs font-medium px-3 py-2.5 rounded-md transition-all duration-200 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:hover:text-foreground data-[state=inactive]:text-muted-foreground focus-visible:outline-none whitespace-nowrap flex-1 min-h-[36px] min-w-0 box-border"
           aria-label="Aspect Ratio"
         >
           Aspect
         </TabsTrigger>
         <TabsTrigger 
           value="background" 
-          className="flex items-center justify-center gap-1.5 text-xs font-medium px-5 py-3 rounded-md transition-all duration-200 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:hover:text-foreground data-[state=inactive]:text-muted-foreground focus-visible:outline-none whitespace-nowrap flex-1 min-h-[36px]"
+          className="flex items-center justify-center gap-1.5 text-xs font-medium px-3 py-2.5 rounded-md transition-all duration-200 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:hover:text-foreground data-[state=inactive]:text-muted-foreground focus-visible:outline-none whitespace-nowrap flex-1 min-h-[36px] min-w-0 box-border"
           aria-label="Background"
         >
           Background
         </TabsTrigger>
         <TabsTrigger 
           value="image" 
-          className="flex items-center justify-center gap-1.5 text-xs font-medium px-5 py-3 rounded-md transition-all duration-200 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:hover:text-foreground data-[state=inactive]:text-muted-foreground focus-visible:outline-none whitespace-nowrap flex-1 min-h-[36px]"
+          className="flex items-center justify-center gap-1.5 text-xs font-medium px-3 py-2.5 rounded-md transition-all duration-200 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:hover:text-foreground data-[state=inactive]:text-muted-foreground focus-visible:outline-none whitespace-nowrap flex-1 min-h-[36px] min-w-0 box-border"
           aria-label="Image"
         >
           Image
         </TabsTrigger>
         <TabsTrigger 
           value="text" 
-          className="flex items-center justify-center gap-1.5 text-xs font-medium px-5 py-3 rounded-md transition-all duration-200 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:hover:text-foreground data-[state=inactive]:text-muted-foreground focus-visible:outline-none whitespace-nowrap flex-1 min-h-[36px]"
+          className="flex items-center justify-center gap-1.5 text-xs font-medium px-3 py-2.5 rounded-md transition-all duration-200 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm data-[state=inactive]:hover:text-foreground data-[state=inactive]:text-muted-foreground focus-visible:outline-none whitespace-nowrap flex-1 min-h-[36px] min-w-0 box-border"
           aria-label="Text"
         >
           Text

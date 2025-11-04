@@ -332,7 +332,7 @@ export function SidebarLeft({
             Export Image
           </Button>
         </SidebarHeader>
-        <SidebarContent className="px-7 py-7 space-y-6">
+        <SidebarContent className="px-6 py-7 space-y-6 overflow-x-hidden">
           <StyleTabs />
         </SidebarContent>
         <SidebarRail />
