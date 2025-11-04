@@ -68,10 +68,10 @@ export function PresetSelector() {
           disabled={!uploadedImageUrl}
           variant="outline"
           size="sm"
-          className="w-full h-9 min-w-0 justify-start gap-2 rounded-lg bg-background hover:bg-accent text-foreground border border-border hover:border-border/80 shadow-none hover:shadow-sm transition-all duration-200 font-medium text-xs px-3 overflow-hidden"
+          className="w-full h-9 justify-center gap-2.5 rounded-lg bg-background hover:bg-accent text-foreground border border-border hover:border-border/80 shadow-none hover:shadow-sm transition-all duration-200 font-medium text-xs px-3 overflow-hidden"
         >
-          <Sparkles className="size-3.5 shrink-0" />
-          <span className="truncate min-w-0">Presets</span>
+          <Sparkles className="size-4 shrink-0" />
+          <span className="truncate">Presets</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="start">
