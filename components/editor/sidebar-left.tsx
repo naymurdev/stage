@@ -174,7 +174,7 @@ export function SidebarLeft({
           --sidebar-border: rgb(237, 237, 237) !important;
           --sidebar-ring: rgb(180, 180, 180) !important;
         }
-        * {
+        *:not(img) {
           border-color: rgb(237, 237, 237) !important;
           outline-color: rgba(180, 180, 180, 0.5) !important;
         }
@@ -234,6 +234,76 @@ export function SidebarLeft({
               if (img.style.display === 'none') {
                 img.style.display = '';
               }
+              
+              // Preserve border styles - get from original document and apply with !important
+              const originalImg = document.querySelector(`img[src="${img.getAttribute('src')}"]`);
+              if (originalImg && originalImg instanceof HTMLElement) {
+                const originalStyle = window.getComputedStyle(originalImg);
+                
+                // Get border properties and colors separately to ensure they're properly converted
+                const borderTop = originalStyle.borderTop;
+                const borderRight = originalStyle.borderRight;
+                const borderBottom = originalStyle.borderBottom;
+                const borderLeft = originalStyle.borderLeft;
+                const borderRadius = originalStyle.borderRadius;
+                const boxShadow = originalStyle.boxShadow;
+                const opacity = originalStyle.opacity;
+                const transform = originalStyle.transform;
+                
+                // Get border colors separately to ensure they're properly converted
+                const borderTopColor = originalStyle.borderTopColor;
+                const borderRightColor = originalStyle.borderRightColor;
+                const borderBottomColor = originalStyle.borderBottomColor;
+                const borderLeftColor = originalStyle.borderLeftColor;
+                
+                if (borderTop && borderTop !== '0px none rgb(0, 0, 0)' && borderTop !== '0px none') {
+                  // Extract border width and style from borderTop
+                  const borderTopWidth = originalStyle.borderTopWidth;
+                  const borderTopStyle = originalStyle.borderTopStyle;
+                  if (borderTopWidth !== '0px' && borderTopStyle !== 'none') {
+                    const borderValue = `${borderTopWidth} ${borderTopStyle} ${borderTopColor}`;
+                    img.style.setProperty('border-top', borderValue, 'important');
+                  }
+                }
+                if (borderRight && borderRight !== '0px none rgb(0, 0, 0)' && borderRight !== '0px none') {
+                  const borderRightWidth = originalStyle.borderRightWidth;
+                  const borderRightStyle = originalStyle.borderRightStyle;
+                  if (borderRightWidth !== '0px' && borderRightStyle !== 'none') {
+                    const borderValue = `${borderRightWidth} ${borderRightStyle} ${borderRightColor}`;
+                    img.style.setProperty('border-right', borderValue, 'important');
+                  }
+                }
+                if (borderBottom && borderBottom !== '0px none rgb(0, 0, 0)' && borderBottom !== '0px none') {
+                  const borderBottomWidth = originalStyle.borderBottomWidth;
+                  const borderBottomStyle = originalStyle.borderBottomStyle;
+                  if (borderBottomWidth !== '0px' && borderBottomStyle !== 'none') {
+                    const borderValue = `${borderBottomWidth} ${borderBottomStyle} ${borderBottomColor}`;
+                    img.style.setProperty('border-bottom', borderValue, 'important');
+                  }
+                }
+                if (borderLeft && borderLeft !== '0px none rgb(0, 0, 0)' && borderLeft !== '0px none') {
+                  const borderLeftWidth = originalStyle.borderLeftWidth;
+                  const borderLeftStyle = originalStyle.borderLeftStyle;
+                  if (borderLeftWidth !== '0px' && borderLeftStyle !== 'none') {
+                    const borderValue = `${borderLeftWidth} ${borderLeftStyle} ${borderLeftColor}`;
+                    img.style.setProperty('border-left', borderValue, 'important');
+                  }
+                }
+                if (borderRadius && borderRadius !== '0px') {
+                  img.style.setProperty('border-radius', borderRadius, 'important');
+                }
+                if (boxShadow && boxShadow !== 'none') {
+                  // Convert box-shadow colors if needed
+                  // Box shadow might contain color values that need conversion
+                  img.style.setProperty('box-shadow', boxShadow, 'important');
+                }
+                if (opacity && opacity !== '1') {
+                  img.style.setProperty('opacity', opacity, 'important');
+                }
+                if (transform && transform !== 'none') {
+                  img.style.setProperty('transform', transform, 'important');
+                }
+              }
             });
             
             // Convert SVG elements fill/stroke attributes
@@ -266,10 +336,43 @@ export function SidebarLeft({
             });
             
             // Convert all CSS variables and oklch colors to RGB - convert ALL elements recursively
+            // But preserve border colors on img elements
             const allElements = targetElement.querySelectorAll('*');
             allElements.forEach((el) => {
               if (el instanceof HTMLElement || el instanceof SVGElement) {
-                convertStylesToRGB(el as HTMLElement, clonedDoc);
+                // Skip img elements - their border colors are already preserved above
+                if (el.tagName.toLowerCase() !== 'img') {
+                  convertStylesToRGB(el as HTMLElement, clonedDoc);
+                } else {
+                  // For img elements, only convert non-border properties
+                  const imgEl = el as HTMLElement;
+                  const win = clonedDoc.defaultView || (clonedDoc as any).parentWindow;
+                  if (win) {
+                    try {
+                      const computedStyle = win.getComputedStyle(imgEl);
+                      // Convert only non-border properties
+                      const nonBorderProps = [
+                        'color', 'backgroundColor', 'outlineColor', 
+                        'background', 'backgroundImage', 'fill', 'stroke'
+                      ];
+                      nonBorderProps.forEach(prop => {
+                        try {
+                          const value = computedStyle.getPropertyValue(prop);
+                          if (value && (value.includes('oklch') || value.includes('var('))) {
+                            const computed = (computedStyle as any)[prop];
+                            if (computed && computed !== 'rgba(0, 0, 0, 0)' && computed !== 'transparent' && computed !== 'none' && !computed.includes('oklch')) {
+                              imgEl.style.setProperty(prop, computed, 'important');
+                            }
+                          }
+                        } catch (e) {
+                          // Ignore errors for individual properties
+                        }
+                      });
+                    } catch (e) {
+                      // Ignore errors
+                    }
+                  }
+                }
               }
             });
             
