@@ -32,7 +32,6 @@ export function StyleTabs() {
     setBackgroundType,
     setBackgroundValue,
     setBackgroundOpacity,
-    setBackgroundBlur,
     setBorderRadius,
     setBackgroundBorderRadius,
     setImageOpacity,
@@ -403,25 +402,6 @@ export function StyleTabs() {
                     {bgUploadError}
                   </div>
                 )}
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <Label className="text-xs font-medium text-gray-700">Background Blur</Label>
-                  <span className="text-xs text-gray-500">
-                    {backgroundConfig.blur || 0}px
-                  </span>
-                </div>
-                <Slider
-                  value={[backgroundConfig.blur || 0]}
-                  onValueChange={(value) => setBackgroundBlur(value[0])}
-                  min={0}
-                  max={100}
-                  step={1}
-                />
-                <p className="text-xs text-gray-400">
-                  Adjust the blur intensity for the background image
-                </p>
               </div>
             </div>
           )}

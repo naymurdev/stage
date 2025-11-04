@@ -76,7 +76,6 @@ interface ImageState {
   setBackgroundType: (type: BackgroundType) => void;
   setBackgroundValue: (value: string) => void;
   setBackgroundOpacity: (opacity: number) => void;
-  setBackgroundBlur: (blur: number) => void;
   addTextOverlay: (overlay: Omit<TextOverlay, 'id'>) => void;
   updateTextOverlay: (id: string, updates: Partial<TextOverlay>) => void;
   removeTextOverlay: (id: string) => void;
@@ -99,7 +98,6 @@ export const useImageStore = create<ImageState>((set, get) => ({
     type: 'gradient',
     value: 'primary_gradient',
     opacity: 1,
-    blur: 0,
   },
   textOverlays: [],
   imageOpacity: 1,
@@ -190,16 +188,6 @@ export const useImageStore = create<ImageState>((set, get) => ({
       backgroundConfig: {
         ...backgroundConfig,
         opacity,
-      },
-    });
-  },
-
-  setBackgroundBlur: (blur: number) => {
-    const { backgroundConfig } = get();
-    set({
-      backgroundConfig: {
-        ...backgroundConfig,
-        blur,
       },
     });
   },

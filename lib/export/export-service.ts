@@ -9,8 +9,9 @@ import {
   preserveImageStyles,
   convertSVGStyles,
   setupExportElement,
-  waitForImages,
+  waitForImages,  
 } from './export-utils';
+import { addWatermarkToCanvas, addWatermarkToElement, createWatermarkElement } from './watermark';
 
 export interface ExportOptions {
   format: 'png' | 'jpg';
@@ -25,9 +26,6 @@ export interface ExportResult {
   blob: Blob;
 }
 
-/**
- * Export an element as an image
- */
 export async function exportElement(
   elementId: string,
   options: ExportOptions
@@ -42,6 +40,17 @@ export async function exportElement(
 
   // Wait for all images to load
   await waitForImages(element);
+
+  // Add watermark DOM element before capture so html2canvas includes it
+  const removeWatermark = addWatermarkToElement(element, {
+    text: 'stage',
+    position: 'bottom-right',
+    backgroundColor: 'transparent',
+    textColor: 'rgba(255, 255, 255, 0.7)',
+  });
+
+  // Wait a moment for watermark to render
+  await new Promise(resolve => setTimeout(resolve, 100));
 
   // Use html2canvas directly with format options
   const canvas = await html2canvas(element, {
@@ -124,14 +133,59 @@ export async function exportElement(
         // Also convert the root element itself
         convertStylesToRGB(targetElement as HTMLElement, clonedDoc);
         
+        // Ensure watermark is present in cloned document
+        let watermarkInClone = clonedDoc.getElementById('export-watermark');
+        if (!watermarkInClone && targetElement instanceof HTMLElement) {
+          // Ensure target element has position relative/absolute for watermark positioning
+          const computedStyle = clonedDoc.defaultView?.getComputedStyle(targetElement);
+          if (computedStyle && computedStyle.position === 'static') {
+            targetElement.style.position = 'relative';
+          }
+          
+          // Create watermark in cloned document
+          watermarkInClone = createWatermarkElement(targetElement, {
+            text: 'stage',
+            position: 'bottom-right',
+            fontSize: Math.max(24, Math.min(Math.min(options.exportWidth, options.exportHeight) * 0.04, 48)),
+            backgroundColor: 'transparent',
+            textColor: 'rgba(255, 255, 255, 0.7)',
+          }, clonedDoc);
+          targetElement.appendChild(watermarkInClone);
+        }
+        
         // Force a reflow to ensure styles are applied
         void clonedDoc.defaultView?.getComputedStyle(targetElement).width;
       }
     },
   });
 
+  // Remove watermark DOM element after capture
+  removeWatermark();
+
   if (!canvas) {
     throw new Error('Failed to create canvas');
+  }
+
+  // Verify canvas was created successfully
+  console.log('Canvas created:', {
+    width: canvas.width,
+    height: canvas.height,
+    scale: options.scale
+  });
+
+  // Also add watermark directly to canvas as a fallback (in case DOM watermark wasn't captured)
+  // This ensures the watermark is always present
+  try {
+    addWatermarkToCanvas(canvas, {
+      text: 'stage',
+      position: 'bottom-right',
+      backgroundColor: 'transparent',
+      textColor: 'rgba(255, 255, 255, 0.7)',
+    });
+    console.log('Watermark added to canvas successfully');
+  } catch (error) {
+    console.error('Error adding watermark to canvas:', error);
+    // Don't fail the export if watermark fails, but log the error
   }
 
   // Convert canvas to blob and data URL with specified format

@@ -9,7 +9,6 @@ export interface BackgroundConfig {
   type: BackgroundType;
   value: GradientKey | SolidColorKey | string;
   opacity?: number;
-  blur?: number; // Blur radius for background images (0-100)
 }
 
 export const getBackgroundStyle = (config: BackgroundConfig): string => {
@@ -34,7 +33,7 @@ export const getBackgroundStyle = (config: BackgroundConfig): string => {
 export const getBackgroundCSS = (
   config: BackgroundConfig
 ): React.CSSProperties => {
-  const { type, value, opacity = 1, blur = 0 } = config;
+  const { type, value, opacity = 1 } = config;
 
   switch (type) {
     case 'gradient':
@@ -73,21 +72,13 @@ export const getBackgroundCSS = (
         });
       }
       
-      const styles: React.CSSProperties = {
+      return {
         backgroundImage: `url(${imageUrl})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         opacity,
       };
-
-      // Apply blur filter if blur > 0
-      // Note: CSS filter blur applies to the entire element, so we need to apply it to a pseudo-element or wrapper
-      if (blur > 0) {
-        styles.filter = `blur(${blur}px)`;
-      }
-      
-      return styles;
 
     default:
       return {
