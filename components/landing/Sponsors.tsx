@@ -69,6 +69,30 @@ const defaultSponsors: Sponsor[] = [
     website: "https://www.prnv.space",
     url: "https://x.com/21prnv",
   },
+  {
+    name: "Fardeen Mansoori",
+    avatar: "/fardeen.jpg",
+    avatarAlt: "fardeen mansoori",
+    amount: "₹500.00",
+    amountType: "one time",
+    total: "₹500.00",
+    github: "Fardeen26",
+    twitter: "fardeentwt",
+    website: "https://www.fardeen.me/",
+    url: "https://x.com/fardeentwt",
+  },
+  {
+    name: "Atharva Mhaske",
+    avatar: "/atharva.jpg",
+    avatarAlt: "atharva",
+    amount: "₹100.00",
+    amountType: "one time",
+    total: "₹100.00",
+    github: "atharvamhaske",
+    twitter: "AtharvaXDevs",
+    website: "https://atharvaxdevs.xyz/",
+    url: "https://x.com/AtharvaXDevs",
+  },
 ];
 
 export function Sponsors({ 
