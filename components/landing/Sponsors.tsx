@@ -66,7 +66,7 @@ export function Sponsors({
               const content = (
                 <div className="group relative rounded-xl border border-border/50 bg-background/95 backdrop-blur-sm hover:border-border hover:shadow-lg transition-all duration-200 overflow-hidden">
 
-                  <div className="p-5 sm:p-6">
+                  <div className="p-5 sm:p-6 rounded-[calc(0.75rem-1px)]">
                     <div className="flex gap-4 items-start">
                       {/* Avatar */}
                       <div className="relative shrink-0">
@@ -111,44 +111,47 @@ export function Sponsors({
                         {/* Social Links */}
                         <div className="flex flex-wrap items-center gap-3 mt-3">
                           {sponsor.github && (
-                            <a
-                              href={`https://github.com/${sponsor.github}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-1.5 text-xs text-foreground/80 hover:text-foreground transition-colors"
-                              onClick={(e) => e.stopPropagation()}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(`https://github.com/${sponsor.github}`, '_blank', 'noopener,noreferrer');
+                              }}
+                              className="flex items-center gap-1.5 text-xs text-foreground/80 hover:text-foreground transition-colors bg-transparent border-0 p-0 cursor-pointer"
                             >
                               <FaGithub className="w-3.5 h-3.5" />
                               <span>github.com/{sponsor.github}</span>
-                            </a>
+                            </button>
                           )}
                           {sponsor.twitter && (
-                            <a
-                              href={`https://twitter.com/${sponsor.twitter}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-1.5 text-xs text-foreground/80 hover:text-foreground transition-colors"
-                              onClick={(e) => e.stopPropagation()}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(`https://twitter.com/${sponsor.twitter}`, '_blank', 'noopener,noreferrer');
+                              }}
+                              className="flex items-center gap-1.5 text-xs text-foreground/80 hover:text-foreground transition-colors bg-transparent border-0 p-0 cursor-pointer"
                             >
                               <FaXTwitter className="w-3.5 h-3.5" />
                               <span className="truncate max-w-[120px]">
                                 x.com/{sponsor.twitter}
                               </span>
-                            </a>
+                            </button>
                           )}
                           {sponsor.website && (
-                            <a
-                              href={sponsor.website}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-1.5 text-xs text-foreground/80 hover:text-foreground transition-colors"
-                              onClick={(e) => e.stopPropagation()}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(sponsor.website, '_blank', 'noopener,noreferrer');
+                              }}
+                              className="flex items-center gap-1.5 text-xs text-foreground/80 hover:text-foreground transition-colors bg-transparent border-0 p-0 cursor-pointer"
                             >
                               <Globe className="w-3.5 h-3.5" />
                               <span className="truncate max-w-[120px]">
                                 {sponsor.website.replace(/^https?:\/\//, '')}
                               </span>
-                            </a>
+                            </button>
                           )}
                         </div>
                       </div>
