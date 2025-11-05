@@ -6,11 +6,12 @@ import Image from 'next/image';
 import { TextOverlayControls } from '@/components/text-overlay/text-overlay-controls';
 import { StyleTabs } from './style-tabs';
 import { Button } from '@/components/ui/button';
-import { CloudUpload, Download, Trash2 } from 'lucide-react';
+import { Download, Trash2 } from 'lucide-react';
 import { useImageStore } from '@/lib/store';
 import { ExportDialog } from '@/components/canvas/dialogs/ExportDialog';
 import { useExport } from '@/hooks/useExport';
 import { PresetSelector } from '@/components/presets/PresetSelector';
+import { FaXTwitter } from 'react-icons/fa6';
 
 export function EditorLeftPanel() {
   const { 
@@ -48,6 +49,15 @@ export function EditorLeftPanel() {
             <div className="flex-1">
               <PresetSelector />
             </div>
+            <a
+              href="https://x.com/code_kartik"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600 hover:text-gray-900"
+              aria-label="Twitter/X"
+            >
+              <FaXTwitter className="h-5 w-5" />
+            </a>
           </div>
         </div>
 

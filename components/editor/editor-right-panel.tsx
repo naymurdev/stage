@@ -72,12 +72,12 @@ export function EditorRightPanel() {
   return (
     <div className="w-80 bg-gray-100 border-l border-gray-200 flex flex-col rounded-l-2xl overflow-hidden">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 bg-white rounded-t-l-2xl">
+      <div className="p-4 border-b border-border bg-background rounded-t-l-2xl">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-gray-900">Canvas Settings</h3>
+          <h3 className="text-sm font-semibold text-foreground">Canvas Settings</h3>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-1 rounded-lg hover:bg-accent transition-colors"
           >
             {expanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
           </button>
@@ -88,13 +88,13 @@ export function EditorRightPanel() {
             {/* Aspect Ratio */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-gray-700">Aspect Ratio</span>
-                <button className="p-1 rounded hover:bg-gray-100">
-                  <Maximize2 className="size-3.5 text-gray-500" />
+                <span className="text-xs font-medium text-muted-foreground">Aspect Ratio</span>
+                <button className="p-1 rounded hover:bg-accent">
+                  <Maximize2 className="size-3.5 text-muted-foreground" />
                 </button>
               </div>
               {selectedRatio && (
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-muted-foreground">
                   {selectedRatio.width}:{selectedRatio.height} • {selectedRatio.width}x{selectedRatio.height}
                 </div>
               )}
@@ -110,11 +110,11 @@ export function EditorRightPanel() {
           <div className="flex-1 overflow-y-auto p-4 space-y-6">
             {/* Background Section */}
             <div className="space-y-4">
-              <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wide">Background</h4>
+              <h4 className="text-xs font-semibold text-foreground uppercase tracking-wide">Background</h4>
               
               {/* Background Type Selector */}
               <div className="space-y-3">
-                <Label className="text-xs font-medium text-gray-700">Background Type</Label>
+                <Label className="text-xs font-medium text-muted-foreground">Background Type</Label>
               <div className="flex gap-2">
                 <Button
                   variant={backgroundConfig.type === 'gradient' ? 'default' : 'outline'}
@@ -127,8 +127,8 @@ export function EditorRightPanel() {
                   }}
                     className={`flex-1 text-xs font-medium transition-all rounded-lg h-8 ${
                     backgroundConfig.type === 'gradient'
-                        ? 'bg-gray-900 hover:bg-gray-800 text-white shadow-sm'
-                        : 'border-gray-300 hover:bg-gray-50 text-gray-700 bg-white'
+                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm'
+                        : 'border-border hover:bg-accent text-foreground bg-background'
                   }`}
                 >
                   Gradient
@@ -144,8 +144,8 @@ export function EditorRightPanel() {
                   }}
                     className={`flex-1 text-xs font-medium transition-all rounded-lg h-8 ${
                     backgroundConfig.type === 'solid'
-                        ? 'bg-gray-900 hover:bg-gray-800 text-white shadow-sm'
-                        : 'border-gray-300 hover:bg-gray-50 text-gray-700 bg-white'
+                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm'
+                        : 'border-border hover:bg-accent text-foreground bg-background'
                   }`}
                 >
                   Solid
@@ -156,8 +156,8 @@ export function EditorRightPanel() {
                   onClick={() => setBackgroundType('image')}
                     className={`flex-1 text-xs font-medium transition-all rounded-lg h-8 ${
                     backgroundConfig.type === 'image'
-                        ? 'bg-gray-900 hover:bg-gray-800 text-white shadow-sm'
-                        : 'border-gray-300 hover:bg-gray-50 text-gray-700 bg-white'
+                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm'
+                        : 'border-border hover:bg-accent text-foreground bg-background'
                   }`}
                 >
                   Image
@@ -168,7 +168,7 @@ export function EditorRightPanel() {
               {/* Gradient Selector */}
               {backgroundConfig.type === 'gradient' && (
                 <div className="space-y-3">
-                  <Label className="text-xs font-medium text-gray-700">Gradient</Label>
+                  <Label className="text-xs font-medium text-muted-foreground">Gradient</Label>
                   <div className="grid grid-cols-2 gap-2.5 max-h-64 overflow-y-auto pr-1">
                     {(Object.keys(gradientColors) as GradientKey[]).map((key) => (
                       <button
@@ -176,8 +176,8 @@ export function EditorRightPanel() {
                         onClick={() => setBackgroundValue(key)}
                         className={`h-16 rounded-lg border-2 transition-all ${
                           backgroundConfig.value === key
-                            ? 'border-gray-900 ring-2 ring-gray-300 shadow-sm'
-                            : 'border-gray-300 hover:border-gray-400'
+                            ? 'border-primary ring-2 ring-ring shadow-sm'
+                            : 'border-border hover:border-border/80'
                         }`}
                     style={{
                           background: gradientColors[key],
@@ -192,7 +192,7 @@ export function EditorRightPanel() {
               {/* Solid Color Selector */}
                 {backgroundConfig.type === 'solid' && (
                         <div className="space-y-3">
-                  <Label className="text-xs font-medium text-gray-700">Color</Label>
+                  <Label className="text-xs font-medium text-muted-foreground">Color</Label>
                   <div className="grid grid-cols-4 gap-2.5">
                     {(Object.keys(solidColors) as SolidColorKey[]).map((key) => (
                               <button
@@ -200,8 +200,8 @@ export function EditorRightPanel() {
                         onClick={() => setBackgroundValue(key)}
                         className={`h-10 rounded-lg border-2 transition-all ${
                                   backgroundConfig.value === key
-                            ? 'border-gray-900 ring-2 ring-gray-300 shadow-sm'
-                                    : 'border-gray-300 hover:border-gray-400'
+                            ? 'border-primary ring-2 ring-ring shadow-sm'
+                                    : 'border-border hover:border-border/80'
                                 }`}
                                 style={{
                                   backgroundColor: solidColors[key],
@@ -223,8 +223,8 @@ export function EditorRightPanel() {
                     backgroundConfig.value.startsWith('data:') ||
                     cloudinaryPublicIds.includes(backgroundConfig.value)) && (
                     <div className="space-y-2">
-                      <Label className="text-xs font-medium text-gray-700">Current Background</Label>
-                      <div className="relative rounded-lg overflow-hidden border border-gray-300 aspect-video bg-gray-50">
+                      <Label className="text-xs font-medium text-muted-foreground">Current Background</Label>
+                      <div className="relative rounded-lg overflow-hidden border border-border aspect-video bg-muted">
                         {(() => {
                           // Check if it's a Cloudinary public ID
                           const isCloudinaryPublicId = typeof backgroundConfig.value === 'string' && 
@@ -282,7 +282,7 @@ export function EditorRightPanel() {
                   {/* Preset Backgrounds */}
                   {backgroundCategories && Object.keys(backgroundCategories).length > 0 && (
                     <div className="space-y-3">
-                      <Label className="text-xs font-medium text-gray-700">Preset Backgrounds</Label>
+                      <Label className="text-xs font-medium text-muted-foreground">Preset Backgrounds</Label>
                       <div className="max-h-[400px] overflow-y-auto pr-1 space-y-3">
                         {getAvailableCategories()
                           .filter((category: string) => category !== 'demo' && category !== 'nature')
@@ -294,7 +294,7 @@ export function EditorRightPanel() {
 
                             return (
                               <div key={category} className="space-y-2">
-                                <Label className="text-xs font-medium text-gray-600 capitalize">
+                                <Label className="text-xs font-medium text-muted-foreground capitalize">
                                   {categoryDisplayName} Wallpapers
                                 </Label>
                                 <div className="grid grid-cols-2 gap-2">
@@ -318,8 +318,8 @@ export function EditorRightPanel() {
                                         }}
                                         className={`relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
                                           backgroundConfig.value === publicId
-                                            ? 'border-gray-900 ring-2 ring-gray-300 shadow-sm'
-                                            : 'border-gray-300 hover:border-gray-400'
+                                            ? 'border-primary ring-2 ring-ring shadow-sm'
+                                            : 'border-border hover:border-border/80'
                                         }`}
                                         title={`${categoryDisplayName} ${idx + 1}`}
                                       >
@@ -342,34 +342,34 @@ export function EditorRightPanel() {
 
                   {/* Upload Background Image */}
                   <div className="space-y-2">
-                    <Label className="text-xs font-medium text-gray-700">Upload Background Image</Label>
+                    <Label className="text-xs font-medium text-muted-foreground">Upload Background Image</Label>
                     <div
                       {...getBgRootProps()}
                       className={`border-2 border-dashed rounded-xl p-6 cursor-pointer transition-all duration-200 flex flex-col items-center justify-center ${
                         isBgDragActive
-                          ? 'border-gray-900 bg-gray-50 scale-[1.02]'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'
+                          ? 'border-primary bg-accent scale-[1.02]'
+                          : 'border-border hover:border-border/80 hover:bg-accent/50'
                       }`}
                     >
                       <input {...getBgInputProps()} />
-                      <div className={`mb-3 transition-colors flex items-center justify-center w-full ${isBgDragActive ? 'text-gray-900' : 'text-gray-400'}`}>
+                      <div className={`mb-3 transition-colors flex items-center justify-center w-full ${isBgDragActive ? 'text-foreground' : 'text-muted-foreground'}`}>
                         <FaImage size={32} />
                       </div>
                       {isBgDragActive ? (
-                        <p className="text-xs font-medium text-gray-900 text-center">Drop the image here...</p>
+                        <p className="text-xs font-medium text-foreground text-center">Drop the image here...</p>
                       ) : (
                         <div className="space-y-1 text-center">
-                          <p className="text-xs font-medium text-gray-700">
+                          <p className="text-xs font-medium text-muted-foreground">
                             Drag & drop an image here
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-muted-foreground">
                             or click to browse • PNG, JPG, WEBP up to {MAX_IMAGE_SIZE / 1024 / 1024}MB
                           </p>
                         </div>
                       )}
                     </div>
                     {bgUploadError && (
-                      <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg p-2">
+                      <div className="text-xs text-destructive bg-destructive/10 border border-destructive/20 rounded-lg p-2">
                         {bgUploadError}
                       </div>
                     )}
@@ -379,7 +379,7 @@ export function EditorRightPanel() {
 
               {/* Border Radius */}
               <div className="space-y-3">
-                <Label className="text-xs font-medium text-gray-700">Border Radius</Label>
+                <Label className="text-xs font-medium text-muted-foreground">Border Radius</Label>
                 <div className="flex gap-2 mb-2">
                   <Button
                     variant={backgroundBorderRadius === 0 ? 'default' : 'outline'}
@@ -387,8 +387,8 @@ export function EditorRightPanel() {
                     onClick={() => setBackgroundBorderRadius(0)}
                     className={`flex-1 text-xs font-medium transition-all rounded-lg h-8 ${
                       backgroundBorderRadius === 0
-                        ? 'bg-gray-900 hover:bg-gray-800 text-white shadow-sm'
-                        : 'border-gray-300 hover:bg-gray-50 text-gray-700 bg-white'
+                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm'
+                        : 'border-border hover:bg-accent text-foreground bg-background'
                     }`}
                   >
                     Sharp Edge
@@ -399,16 +399,16 @@ export function EditorRightPanel() {
                     onClick={() => setBackgroundBorderRadius(24)}
                     className={`flex-1 text-xs font-medium transition-all rounded-lg h-8 ${
                       backgroundBorderRadius > 0
-                        ? 'bg-gray-900 hover:bg-gray-800 text-white shadow-sm'
-                        : 'border-gray-300 hover:bg-gray-50 text-gray-700 bg-white'
+                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm'
+                        : 'border-border hover:bg-accent text-foreground bg-background'
                     }`}
                   >
                     Rounded
                   </Button>
                 </div>
                 <div className="flex justify-between items-center mb-1">
-                  <Label className="text-xs font-medium text-gray-700">Border Radius</Label>
-                  <span className="text-xs text-gray-600 font-medium">{backgroundBorderRadius}px</span>
+                  <Label className="text-xs font-medium text-muted-foreground">Border Radius</Label>
+                  <span className="text-xs text-muted-foreground font-medium">{backgroundBorderRadius}px</span>
                 </div>
                 <Slider
                   value={[backgroundBorderRadius]}
@@ -423,8 +423,8 @@ export function EditorRightPanel() {
               {/* Opacity */}
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <Label className="text-xs font-medium text-gray-700">Opacity</Label>
-                  <span className="text-xs text-gray-600 font-medium">
+                  <Label className="text-xs font-medium text-muted-foreground">Opacity</Label>
+                  <span className="text-xs text-muted-foreground font-medium">
                     {Math.round((backgroundConfig.opacity || 1) * 100)}%
                   </span>
                 </div>
@@ -436,20 +436,6 @@ export function EditorRightPanel() {
                   step={0.01}
                   className="w-full"
                 />
-              </div>
-            </div>
-
-            {/* Position Section - Placeholder */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wide">Position</h4>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className="rounded" />
-                  <span className="text-xs text-gray-700">Snap to Grid</span>
-                </label>
-              </div>
-              <div className="w-full h-32 bg-gray-50 rounded-xl border border-gray-300 flex items-center justify-center">
-                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
               </div>
             </div>
           </div>
