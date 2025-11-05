@@ -45,6 +45,30 @@ const defaultSponsors: Sponsor[] = [
     website: "https://jaywyawhare-github-io.vercel.app",
     url: "https://x.com/jaywyawhare",
   },
+  {
+    name: "Karan Kendre",
+    avatar: "/karan.jpg",
+    avatarAlt: "karan kendre",
+    amount: "₹501.00",
+    amountType: "one time",
+    total: "₹501.00",
+    github: "kendrekaran",
+    twitter: "karaan_dev",
+    website: "https://www.karaan.me/",
+    url: "https://x.com/karaan_dev",
+  },
+  {
+    name: "Pranav Patil",
+    avatar: "/pranav.jpg",
+    avatarAlt: "pranav patil",
+    amount: "₹100.00",
+    amountType: "one time",
+    total: "₹100.00",
+    github: "21prnv",
+    twitter: "21prnv",
+    website: "https://www.prnv.space",
+    url: "https://x.com/21prnv",
+  },
 ];
 
 export function Sponsors({ 
@@ -61,13 +85,13 @@ export function Sponsors({
           {title}
         </h2>
         {hasSponsors ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">
             {sponsors.map((sponsor, index) => {
               const content = (
-                <div className="group relative rounded-xl border border-border/50 bg-background/95 backdrop-blur-sm hover:border-border hover:shadow-lg transition-all duration-200 overflow-hidden">
+                <div className="group relative rounded-xl border border-border/50 bg-background/95 backdrop-blur-sm hover:border-border hover:shadow-lg transition-all duration-200 overflow-hidden h-full flex flex-col">
 
-                  <div className="p-5 sm:p-6 rounded-[calc(0.75rem-1px)]">
-                    <div className="flex gap-4 items-start">
+                  <div className="p-5 sm:p-6 rounded-[calc(0.75rem-1px)] flex-1 flex flex-col">
+                    <div className="flex gap-4 items-start flex-1">
                       {/* Avatar */}
                       <div className="relative shrink-0">
                         {sponsor.avatar ? (
@@ -90,7 +114,7 @@ export function Sponsors({
                       </div>
 
                       {/* Content */}
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 min-w-0 flex flex-col">
                         <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1.5 truncate">
                           {sponsor.name}
                         </h3>
@@ -109,7 +133,7 @@ export function Sponsors({
                         )}
 
                         {/* Social Links */}
-                        <div className="flex flex-wrap items-center gap-3 mt-3">
+                        <div className="flex flex-wrap items-center gap-3 mt-auto">
                           {sponsor.github && (
                             <button
                               type="button"
@@ -175,7 +199,7 @@ export function Sponsors({
               }
 
               return (
-                <div key={index}>
+                <div key={index} className="h-full">
                   {content}
                 </div>
               );
