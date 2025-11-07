@@ -403,7 +403,7 @@ export const presets: PresetConfig[] = [
     aspectRatio: '16_9',
     backgroundConfig: {
       type: 'image',
-      value: 'backgrounds/backgrounds/mac/mac-asset-8',
+      value: 'backgrounds/backgrounds/silk/monochrome',
       opacity: 1,
     },
     borderRadius: 20,
@@ -431,8 +431,8 @@ export const presets: PresetConfig[] = [
       spread: 0,
       color: 'rgba(0, 0, 0, 0.3)',
     },
-    backgroundBlur: 20,
-    backgroundNoise: 35,
+    backgroundBlur: 5,
+    backgroundNoise: 50,
   },
   {
     id: 'vintage-film',
