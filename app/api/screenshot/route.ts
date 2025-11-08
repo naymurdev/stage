@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import puppeteer from 'puppeteer'
+import puppeteer from 'puppeteer-core'
+import chromium from '@sparticuz/chromium'
+
+export const maxDuration = 10
 
 export async function POST(request: NextRequest) {
   let browser: Awaited<ReturnType<typeof puppeteer.launch>> | null = null
@@ -20,7 +23,6 @@ export async function POST(request: NextRequest) {
     let validUrl: URL
     try {
       validUrl = new URL(url)
-      // Ensure URL has http or https protocol
       if (!['http:', 'https:'].includes(validUrl.protocol)) {
         return NextResponse.json(
           { error: 'URL must use http or https protocol' },
@@ -34,16 +36,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Launch browser
+    // Launch browser with Chromium optimized for serverless
     browser = await puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--disable-gpu',
-      ],
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
     })
 
     const page = await browser.newPage()
@@ -55,25 +53,24 @@ export async function POST(request: NextRequest) {
       deviceScaleFactor: 1,
     })
 
-    // Navigate to URL with timeout
+    // Navigate with optimized settings for speed
     try {
       await page.goto(validUrl.toString(), {
-        waitUntil: 'networkidle2',
-        timeout: 30000, // 30 seconds
+        waitUntil: 'domcontentloaded', // Faster than networkidle2
+        timeout: 7000, // 7 seconds max (leaving 3s for screenshot)
       })
     } catch (error) {
       await browser.close()
       return NextResponse.json(
-        { error: 'Failed to load website. The site may be taking too long to respond or may be inaccessible.' },
+        { error: 'Failed to load website. The site may be taking too long to respond.' },
         { status: 408 }
       )
     }
 
-    // Wait a bit for any dynamic content to load
-    // Using Promise-based delay instead of deprecated waitForTimeout
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Wait briefly for any critical dynamic content
+    await new Promise(resolve => setTimeout(resolve, 500))
 
-    // Take viewport screenshot (only visible area, not full page)
+    // Take viewport screenshot
     const screenshot = await page.screenshot({
       fullPage: false,
       type: 'png',
@@ -84,7 +81,6 @@ export async function POST(request: NextRequest) {
     await browser.close()
     browser = null
 
-    // Return base64 screenshot
     return NextResponse.json({
       screenshot: screenshot as string,
       url: validUrl.toString(),
@@ -115,7 +111,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
-      if (error.message.includes('Navigation timeout')) {
+      if (error.message.includes('Navigation timeout') || error.message.includes('Timeout')) {
         return NextResponse.json(
           { error: 'The website took too long to load. Please try again.' },
           { status: 408 }
