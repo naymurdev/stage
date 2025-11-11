@@ -11,12 +11,24 @@ const PORT = process.env.PORT || process.env.SCREENSHOT_SERVICE_PORT || 3001;
 
 async function verifyPlaywrightInstallation() {
   try {
-    const browser = await chromium.launch({ headless: true });
+    const browser = await chromium.launch({ 
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+      ]
+    });
     await browser.close();
     console.log('✓ Playwright browser verified');
   } catch (error) {
     console.error('✗ Playwright browser not available:', error.message);
-    console.error('Run: npx playwright install chromium');
+    console.error('Browser path:', process.env.PLAYWRIGHT_BROWSERS_PATH || 'default');
+    console.error('Please ensure build command includes: PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install --with-deps chromium');
+    console.error('This error usually means:');
+    console.error('1. Browsers were not installed during build');
+    console.error('2. System dependencies are missing (use --with-deps flag)');
+    console.error('3. Browser path is incorrect');
     process.exit(1);
   }
 }

@@ -121,10 +121,12 @@ Health check endpoint.
 
 **Render-specific notes:**
 - The `render.yaml` file is included for automatic configuration
-- Playwright browsers are installed during the build step
+- Playwright browsers are installed during the build step using `PLAYWRIGHT_BROWSERS_PATH=0` to ensure they persist in `node_modules`
+- System dependencies are automatically installed with `--with-deps` flag
 - Health check endpoint is automatically configured at `/health`
 - Minimum 512MB RAM recommended (Starter plan)
 - For production, consider upgrading to Standard plan for better performance
+- Build time: ~3-5 minutes (includes browser download ~280MB)
 
 ### Option 2: Railway
 
@@ -166,7 +168,9 @@ pm2 save
 - `PORT` - Port number (auto-set by Render, defaults to 3001 locally)
 - `SCREENSHOT_SERVICE_PORT` - Alternative port setting (fallback if PORT not set)
 - `NODE_ENV` - Environment mode (`production` or `development`)
-- `SERVICE_SECRET_KEY` - Optional API key for authentication
+- `ALLOWED_ORIGINS` - Comma-separated list of allowed CORS origins (optional, defaults to `*` allowing all)
+  - Example: `https://your-app.vercel.app,https://www.yourdomain.com`
+  - **Note**: Server-to-server requests (from Next.js API routes) don't require CORS, but this is useful if you need browser access
 
 ## Testing
 
@@ -188,12 +192,15 @@ curl -X POST http://localhost:3001/screenshot \
 
 ## Troubleshooting
 
-### "Failed to launch browser"
+### "Failed to launch browser" or "Executable doesn't exist"
 
 **On Render:**
-- Ensure build command includes `npm run build` which installs Playwright browsers
-- Check build logs to verify Playwright installation succeeded
-- If issues persist, upgrade to a plan with more resources
+- The build command automatically includes `PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install --with-deps chromium`
+- This installs browsers in `node_modules` (which persists) and system dependencies
+- Check build logs to verify Playwright installation succeeded (look for "Chromium downloaded")
+- If the error persists, verify the build completed successfully
+- Ensure you're using the `render.yaml` configuration or manually set the build command
+- If issues persist, upgrade to a plan with more resources (Standard plan recommended)
 
 **Local/Self-hosted:**
 Install system dependencies:

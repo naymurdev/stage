@@ -80,6 +80,11 @@ A modern web-based canvas editor for creating stunning visual designs. Upload im
 
    # Cache Cleanup Security (Required for production)
    CLEANUP_SECRET=your-random-secret-string
+
+   # Screenshot Service URL (Required if using standalone service)
+   # For local dev: http://localhost:3001
+   # For production: https://your-screenshot-service.onrender.com
+   SCREENSHOT_SERVICE_URL=http://localhost:3001
    ```
 
    > **Note**: Screenshot feature requires database and Cloudinary. All other core features including **export work fully in-browser**. Cloudinary is also used for optional image optimization of backgrounds and overlays.
@@ -205,7 +210,12 @@ NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your-cloud-name
 CLOUDINARY_API_KEY=your-api-key
 CLOUDINARY_API_SECRET=your-api-secret
 CLEANUP_SECRET=your-random-secret-string
+
+# Screenshot Service (Required if using standalone service)
+SCREENSHOT_SERVICE_URL=https://your-screenshot-service.onrender.com
 ```
+
+**Note**: `SCREENSHOT_SERVICE_URL` should point to your deployed screenshot service on Render (or other platform). If not set, defaults to `http://localhost:3001` for local development.
 
 ### Manual Screenshot Cache Cleanup
 
