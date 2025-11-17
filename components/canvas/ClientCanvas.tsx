@@ -108,6 +108,7 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
 
   const {
     screenshot,
+    setScreenshot,
     background,
     shadow,
     pattern: patternStyle,
@@ -750,15 +751,26 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
           {/* Main Image Layer - Hide when mockups are active */}
           {!hasMockups && (
             <Layer>
-              <Group
-                x={canvasW / 2 + screenshot.offsetX}
-                y={canvasH / 2 + screenshot.offsetY}
-                width={framedW}
-                height={framedH}
-                offsetX={framedW / 2}
-                offsetY={framedH / 2}
-                rotation={screenshot.rotation}
-              >
+                <Group
+                  x={canvasW / 2 + screenshot.offsetX}
+                  y={canvasH / 2 + screenshot.offsetY}
+                  width={framedW}
+                  height={framedH}
+                  offsetX={framedW / 2}
+                  offsetY={framedH / 2}
+                  rotation={screenshot.rotation}
+                  draggable={true}
+                  onDragEnd={(e) => {
+                    const node = e.target;
+                    // Persist group offset relative to canvas center
+                    const newOffsetX = node.x() - canvasW / 2;
+                    const newOffsetY = node.y() - canvasH / 2;
+                    // update store (partial update expected)
+                    if (typeof setScreenshot === 'function') {
+                      setScreenshot({ offsetX: newOffsetX, offsetY: newOffsetY });
+                    }
+                  }}
+                >
                 {/* Solid Frame */}
                 {showFrame && frame.type === 'solid' && (
                   <Rect
@@ -1088,7 +1100,7 @@ function CanvasRenderer({ image }: { image: HTMLImageElement }) {
                       : screenshot.radius
                   }
                   imageSmoothingEnabled={false}
-                  draggable={true}
+                  draggable={false}
                   onClick={(e) => {
                     e.cancelBubble = true;
                     setIsMainImageSelected(true);
