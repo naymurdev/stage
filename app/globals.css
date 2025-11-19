@@ -167,12 +167,10 @@
   }
   html {
     height: 100%;
-    overflow: hidden;
   }
   body {
     @apply bg-background text-foreground;
-    height: 100%;
-    overflow: hidden;
+    min-height: 100%;
     width: 100%;
   }
   /* Glass morphism utility classes */

@@ -102,6 +102,70 @@ export function EditorRightPanel() {
             <div className="space-y-4">
               <h4 className="text-xs font-semibold text-foreground uppercase tracking-wide">Background</h4>
               
+              {/* Opacity */}
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <Label className="text-xs font-medium text-muted-foreground">Opacity</Label>
+                  <span className="text-xs text-muted-foreground font-medium">
+                    {Math.round((backgroundConfig.opacity !== undefined ? backgroundConfig.opacity : 1) * 100)}%
+                  </span>
+                </div>
+                <Slider
+                  value={[backgroundConfig.opacity !== undefined ? backgroundConfig.opacity : 1]}
+                  onValueChange={(value) => setBackgroundOpacity(value[0])}
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  className="w-full"
+                />
+              </div>
+
+              {/* Border Radius */}
+              <div className="space-y-3">
+                <Label className="text-xs font-medium text-muted-foreground">Border Radius</Label>
+                <div className="flex gap-2 mb-2">
+                  <Button
+                    variant={backgroundBorderRadius === 0 ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setBackgroundBorderRadius(0)}
+                    className={`flex-1 text-xs font-medium transition-all rounded-lg h-8 border ${
+                      backgroundBorderRadius === 0
+                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm border-primary'
+                        : 'border-border/50 hover:bg-accent text-foreground bg-background hover:border-border'
+                    }`}
+                  >
+                    Sharp Edge
+                  </Button>
+                  <Button
+                    variant={backgroundBorderRadius > 0 ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setBackgroundBorderRadius(24)}
+                    className={`flex-1 text-xs font-medium transition-all rounded-lg h-8 border ${
+                      backgroundBorderRadius > 0
+                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm border-primary'
+                        : 'border-border/50 hover:bg-accent text-foreground bg-background hover:border-border'
+                    }`}
+                  >
+                    Rounded
+                  </Button>
+                </div>
+                <div className="flex justify-between items-center mb-1">
+                  <Label className="text-xs font-medium text-muted-foreground">Border Radius</Label>
+                  <span className="text-xs text-muted-foreground font-medium">{backgroundBorderRadius}px</span>
+                </div>
+                <Slider
+                  value={[backgroundBorderRadius]}
+                  onValueChange={(value) => setBackgroundBorderRadius(value[0])}
+                  min={0}
+                  max={100}
+                  step={1}
+                  className="w-full"
+                />
+              </div>
+
+              {/* Background Effects */}
+              <BackgroundEffects />
+
               {/* Background Type Selector */}
               <div className="space-y-3">
                 <Label className="text-xs font-medium text-muted-foreground">Background Type</Label>
@@ -366,70 +430,6 @@ export function EditorRightPanel() {
                   </div>
                   </div>
                 )}
-
-              {/* Border Radius */}
-              <div className="space-y-3">
-                <Label className="text-xs font-medium text-muted-foreground">Border Radius</Label>
-                <div className="flex gap-2 mb-2">
-                  <Button
-                    variant={backgroundBorderRadius === 0 ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setBackgroundBorderRadius(0)}
-                    className={`flex-1 text-xs font-medium transition-all rounded-lg h-8 border ${
-                      backgroundBorderRadius === 0
-                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm border-primary'
-                        : 'border-border/50 hover:bg-accent text-foreground bg-background hover:border-border'
-                    }`}
-                  >
-                    Sharp Edge
-                  </Button>
-                  <Button
-                    variant={backgroundBorderRadius > 0 ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => setBackgroundBorderRadius(24)}
-                    className={`flex-1 text-xs font-medium transition-all rounded-lg h-8 border ${
-                      backgroundBorderRadius > 0
-                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm border-primary'
-                        : 'border-border/50 hover:bg-accent text-foreground bg-background hover:border-border'
-                    }`}
-                  >
-                    Rounded
-                  </Button>
-                </div>
-                <div className="flex justify-between items-center mb-1">
-                  <Label className="text-xs font-medium text-muted-foreground">Border Radius</Label>
-                  <span className="text-xs text-muted-foreground font-medium">{backgroundBorderRadius}px</span>
-                </div>
-                <Slider
-                  value={[backgroundBorderRadius]}
-                  onValueChange={(value) => setBackgroundBorderRadius(value[0])}
-                  min={0}
-                  max={100}
-                  step={1}
-                  className="w-full"
-                />
-              </div>
-
-              {/* Opacity */}
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <Label className="text-xs font-medium text-muted-foreground">Opacity</Label>
-                  <span className="text-xs text-muted-foreground font-medium">
-                    {Math.round((backgroundConfig.opacity !== undefined ? backgroundConfig.opacity : 1) * 100)}%
-                  </span>
-                </div>
-                <Slider
-                  value={[backgroundConfig.opacity !== undefined ? backgroundConfig.opacity : 1]}
-                  onValueChange={(value) => setBackgroundOpacity(value[0])}
-                  min={0}
-                  max={1}
-                  step={0.01}
-                  className="w-full"
-                />
-              </div>
-
-              {/* Background Effects */}
-              <BackgroundEffects />
             </div>
           </div>
         </>

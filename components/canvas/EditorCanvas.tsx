@@ -43,7 +43,9 @@ export function EditorCanvas() {
           <Button
             onClick={() => setExportDialogOpen(true)}
             disabled={!uploadedImageUrl}
-            className="h-9 justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-md transition-all font-medium px-4"
+            variant="integration"
+            showArrow={false}
+            className="h-9 justify-center gap-2 px-4"
           >
             <Download className="size-4" />
             <span>Download</span>
@@ -61,7 +63,8 @@ export function EditorCanvas() {
                 })
             }}
             disabled={!uploadedImageUrl || isExporting}
-            className="h-9 justify-center gap-2 rounded-lg bg-muted hover:bg-muted/80 text-foreground shadow-sm hover:shadow-md transition-all font-medium border border-border px-4"
+            variant="secondary"
+            className="h-9 justify-center gap-2 px-4"
           >
             <Copy className="size-4" />
             <span>{copySuccess ? 'Copied!' : 'Copy'}</span>
@@ -69,8 +72,8 @@ export function EditorCanvas() {
           <Button
             onClick={clearImage}
             disabled={!uploadedImageUrl}
-            variant="outline"
-            className="h-9 justify-center gap-2 rounded-lg hover:bg-destructive/10 text-destructive hover:text-destructive border-destructive/20 hover:border-destructive/40 transition-all font-medium px-4"
+            variant="destructive"
+            className="h-9 justify-center gap-2 px-4"
           >
             <Trash2 className="size-4" />
             <span>Remove Image</span>

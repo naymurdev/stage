@@ -53,8 +53,9 @@ export function ExportDialog({
           <Button
             onClick={handleExport}
             disabled={isExporting}
-            className="w-full h-11 font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
-            size="lg"
+            variant="integration"
+            showArrow={false}
+            className="w-full"
           >
             {isExporting ? "Exporting..." : "Export as PNG"}
           </Button>

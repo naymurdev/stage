@@ -76,10 +76,6 @@ export function StyleTabs() {
           </div>
         </div>
 
-        <BorderControls />
-
-        <ShadowControls shadow={imageShadow} onShadowChange={setImageShadow} />
-
         <div className="space-y-3">
           <div className="p-3 rounded-lg bg-muted/50 border border-border/50">
             <Slider
@@ -108,6 +104,10 @@ export function StyleTabs() {
             valueDisplay={`${Math.round(imageOpacity * 100)}%`}
           />
         </div>
+
+        <BorderControls />
+
+        <ShadowControls shadow={imageShadow} onShadowChange={setImageShadow} />
         </TabsContent>
 
         <TabsContent value="3d" className="mt-4">
