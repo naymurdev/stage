@@ -11,7 +11,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Menu, Settings } from "lucide-react";
-import { useAutosaveDraft } from '@/hooks/useAutosaveDraft':
+import { useAutosaveDraft } from '@/hooks/useAutosaveDraft';
 import { MobileBanner } from "./MobileBanner";
 
 function EditorMain() {
