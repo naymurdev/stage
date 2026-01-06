@@ -219,6 +219,16 @@ export function useAutosaveDraft() {
             imageBorder,
             imageShadow,
             perspective3D,
+            slides: [],
+            activeSlideId: null,
+            slideshow: {
+              enabled: false,
+              defaultDuration: 0,
+              animation: "none",
+            },
+            isPreviewing: false,
+            previewIndex: 0,
+            previewStartedAt: null,
           };
 
           await saveDraft(editorState, imageState);
